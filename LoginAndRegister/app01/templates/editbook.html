@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>编辑书籍</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <form action="" method="post">
+
+                {% csrf_token %}
+              <div class="form-group">
+                <label for="title">书名</label>
+                <input type="text" class="form-control" id="title" placeholder="书名" name="title" value="{{ old_obj.title }}">
+              </div>
+                <div class="form-group">
+                <label for="price">价格</label>
+                <input type="text" class="form-control" id="price" placeholder="价格" name="price" value="{{ old_obj.price }}">
+              </div>
+                <div class="form-group">
+                <label for="publishDate">出版日期</label>
+                <input type="date" class="form-control" id="publishDate" name="publishDate" value="{{ old_obj.publishDate|date:'Y-m-d' }}">
+              </div>
+                <div class="form-group">
+                <label for="title">出版社</label>
+                    <select name="publishs_id" id="publishs" class="form-control">
+                        {% for publish in all_publish %}
+                            {% if publish == old_obj.publishs %}
+                                <option value="{{ publish.id }}" selected>{{ publish.name }}</option>
+                            {% else %}
+                                <option value="{{ publish.id }}">{{ publish.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+              </div>
+                <div class="form-group">
+                <label for="title">书名</label>
+                <select name="authors" id="authors" multiple class="form-control">
+                        {% for author in all_authors %}
+                            {% if author in old_obj.authors.all %}
+                                <option value="{{ author.id }}" selected>{{ author.name }}</option>
+                            {% else %}
+                                <option value="{{ author.id }}">{{ author.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+              </div>
+              <button type="submit" class="btn btn-success pull-right">提交</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

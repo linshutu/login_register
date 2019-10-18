@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<h1>书籍展示</h1>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <a href="{% url 'addbook' %}" class="btn btn-primary">添加书籍</a>
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>书名</th>
+                    <th>出版日期</th>
+                    <th>价格</th>
+                    <th>出版社</th>
+                    <th>作者</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for book_obj in book_objs %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ book_obj.title }}</td>
+                        <td>{{ book_obj.publishDate|date:'Y-m-d' }}</td>
+                        <td>{{ book_obj.price }}</td>
+                        <td>{{ book_obj.publishs.name }}</td>
+                        <td>
+                            {{ book_obj.get_authors_name }}
+
+                        </td>
+                        <td>
+                            <a href="{% url 'editbook' book_obj.pk %}" class="btn btn-warning">编辑</a>
+                            <a href="{% url 'delbook' %}?book_id={{ book_obj.pk }}" class="btn btn-danger">删除</a>
+                            <button book_id="{{ book_obj.pk }}" class="btn btn-danger ajaxbtn" >ajax删除</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div><span><h3 style="background: greenyellow"><a href="/logout/">退出登录</a></h3></span></div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    {#    以下三者的引用顺序是固定的#}
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+$(".ajaxbtn").on("click", function () {
+        var ths = $(this);
+      swal({
+        title: "你确定要删除吗？",
+        text: "删除可就找不回来了哦！",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        closeOnConfirm: false
+        },
+        function () {
+          //var deleteId = $(this).parent().parent().attr("data_id");
+          //console.log(ths);
+          //console.log($(this));
+            var book_id = ths.attr('book_id');
+          $.ajax({
+            url: "/delbook/",
+            type: "post",
+            data: {"book_id": book_id,'csrfmiddlewaretoken':"{{ csrf_token }}"},
+            success: function (data) {
+              if (data.status === 1) {
+                swal("删除成功!", "你可以准备跑路了！", "success");
+                // location.reload();
+                ths.parent().parent().remove();
+
+              } else {
+                swal("删除失败", "你可以再尝试一下！", "error")
+              }
+            }
+          })
+        });
+    })
+</script>
+</div>
+</body>
+</html>
